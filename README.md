@@ -14,11 +14,13 @@ A module that take care of finding the best architecture and functions for a reg
 3. optimizers : currently available : SGD, RMSprop, Adagrad, Adadelta, Adam, Adamax, Nadam. By default, will test all of them.
 4. loss (functions) : check the available loss function here : https://keras.io/losses/ . By default, will test mean_squared_error_ and categorical_crossentropy. 
 5. learning_rates : self-explanatory. by default : 0.00001, 0.0001 and 0.001.
+6. hidden_activation and output_activation : layers activation functions : check the available activation functions here : https://keras.io/activations/
 
 ### General informations :
 1. Works only for multi-categorical regular neural network (at the moment anyways).
 2. Needs tensorflow with keras, sklearn.metrics and pandas.
-3. The main function, tune_params, return a pandas DataFrame with:
+3. The RnnTuner class can now store and makes the tuner parametrable.
+4. Direct function still available : tune_params, which returns a pandas DataFrame with:
   - All (tuned or not) parameters.
   - The score for each combination.
   - The total time to process each combination.
