@@ -8,11 +8,17 @@ import pandas as pd
 import time
 import itertools
 
+all_optimizers = ("adadelta", "adagrad", "adam", "adamax", "nadam", "rmsprop", "sgd")
+all_activations = ("elu", "softmax", "selu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid",
+                   "exponential", "linear")
+
 
 class RnnTuner:
-    all_optimizers = ("adadelta", "adagrad", "adam", "adamax", "nadam", "rmsprop", "sgd")
-    all_activations = ("elu", "softmax", "selu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid",
-                       "exponential", "linear")
+    """
+    An object which stores all the tunable parameters, the best model from the last search as well as the pandas
+    DataFrame showing all the models tested and resulting accuracy scores.
+    """
+
     last_best_param = None
     last_best_score = None
     last_best_model = None
@@ -22,6 +28,26 @@ class RnnTuner:
                  n_layers=(2, 4), neurones_per_layer=(4, 8, 16), architectures=None, optimizers=('RMSprop', 'Adam'),
                  batch_sizes=(512, 1024), loss=("mean_squared_error", "categorical_crossentropy"),
                  decreasing_layers=True, hidden_activations="relu", output_activations="softmax"):
+        """
+        Tunes parameters using models and ranges of values or functions.
+        Will test all the combinations and give the results back as a DataFrame.
+        :param data_train: Training input data (ndarray).
+        :param target_train: Training label data (ndarray).
+        :param data_test: Test input data (ndarray).
+        :param target_test: Test label data (ndarray).
+        :param learning_rates: List as a range of learning rates (list of float).
+        :param n_layers: List as a range of number of layers (list of int).
+        :param neurones_per_layer: List as a range of number of neurons per layer (list of int).
+        :param architectures: Layer and neurones archit$ecture (list of list of int).
+            If not None, it will overwite any arguments given in n_layers and neurone_per_layer.
+        :param optimizers: List of optimizers (list of string).
+        :param hidden_activations: Activation functions for hidden layers (list of string).
+        :param output_activations: Activation functions for output layers (list of string).
+        :param batch_sizes: List of batch sizes (list of int).
+        :param loss: list of names of loss functions (list of string).
+        :param decreasing_layers: If true, each layer will be of equal or smaller size as the previous one. If false,
+        all combinations will be tested. This parameter is ignored if architectures is informed. (boolean)
+        """
         self.data_train = data_train
         self.data_test = data_test
         self.target_train = target_train
@@ -97,11 +123,6 @@ class RnnTuner:
         score = accuracy_score(test_target, np.argmax(self.last_best_model.predict(test_data), axis=1))
         print("Accuracy = %f in % sec" % (score, int(1000 * (time.perf_counter() - t)) / 1000))
         return score
-
-
-all_optimizers = ("adadelta", "adagrad", "adam", "adamax", "nadam", "rmsprop", "sgd")
-all_activations = ("elu", "softmax", "selu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid",
-                   "exponential", "linear")
 
 
 def create_optimizer(optimizer, learning_rate):
